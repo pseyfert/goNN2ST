@@ -1,10 +1,13 @@
 package main
 
 import (
+	"C"
 	"fmt"
 	"math"
 	"math/rand"
+	"reflect"
 	"sort"
+	"unsafe"
 
 	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/gonum/stat"
@@ -80,6 +83,31 @@ func TS2(k int, t *testdata) float64 {
 	retval := math.Log(float64(nB)/float64(nT-1)) + float64(D)*math.Log(running_numerator/running_denominator)/float64(len(r_b))
 
 	return retval
+}
+
+//export TS_for_numpy
+func TS_for_numpy(dataB *C.double, rows_b, cols_b C.int, dataT *C.double, rows_t, cols_t C.int) {
+	header_b := reflect.SliceHeader{
+		Data: uintptr(unsafe.Pointer(dataB)),
+		Len:  int(rows_b * cols_b),
+		Cap:  int(rows_b * cols_b),
+	}
+	slice_b := *(*[]float64)(unsafe.Pointer(&header_b))
+
+	header_t := reflect.SliceHeader{
+		Data: uintptr(unsafe.Pointer(dataT)),
+		Len:  int(rows_t * cols_t),
+		Cap:  int(rows_t * cols_t),
+	}
+	slice_t := *(*[]float64)(unsafe.Pointer(&header_t))
+
+	var td testdata
+	td.T = mat.NewDense(int(rows_t), int(cols_t), slice_t)
+	td.B = mat.NewDense(int(rows_b), int(cols_b), slice_b)
+	plotToy(&td)
+	// var retval C.float
+	fmt.Printf(" TS is %f\n", TS(5, &td))
+
 }
 
 func shuffle(t *testdata) *testdata {
@@ -176,14 +204,15 @@ func main() {
 	mean_t := mat.NewVecDense(2, []float64{1.15, 1.15})
 	cov_t := mat.NewSymDense(2, []float64{1.0, 0.0, 0.0, 1.0})
 
-	rand.Seed(int64(0))
-	toy, _ := newTestdata(mean_b, cov_b, mean_t, cov_t, 20000)
+	for i := 0; i < 50; i++ {
+		rand.Seed(int64(i))
+		toy, _ := newTestdata(mean_b, cov_b, mean_t, cov_t, 20000)
 
-	pval := Pvalue(100, 5, toy)
-	sig := significance_from_pval(pval)
+		fmt.Printf("TS_obs (K=%d) = %f\n", 5, TS(5, toy))
+	}
 
-	fmt.Println(" got pval %f\n", pval)
-	fmt.Println(" got significance %f\n", sig)
+	// pval := Pvalue(100, 5, toy)
+	// sig := significance_from_pval(pval)
 
 	// plotToy(toy)
 }

@@ -17,3 +17,5 @@
 # repository specific files
 goNN2ST
 *.png
+goNN2ST.h
+__pycache__
