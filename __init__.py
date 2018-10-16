@@ -22,9 +22,9 @@ goNN2ST.TS_for_numpy.argtypes = [
 
 
 def py2goNN2ST(x_benchmark, x_test):
-    cols, b_rows = x_benchmark.shape
-    cols, t_rows = x_test.shape
+    b_rows, cols = x_benchmark.shape
+    t_rows, cols = x_test.shape
     goNN2ST.TS_for_numpy(
-        np.reshape(x_benchmark, cols*b_rows, "F"), b_rows, cols,
-        np.reshape(x_test, cols*t_rows, "F"), t_rows, cols
+        np.reshape(x_benchmark, cols*b_rows), b_rows, cols,
+        np.reshape(x_test, cols*t_rows), t_rows, cols
     )

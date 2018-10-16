@@ -35,19 +35,20 @@ func benchmarkTS(b *testing.B, N int) {
 	}
 }
 
-func BenchmarkTS_10_(b *testing.B)     { benchmarkTS(b, 10) }
-func BenchmarkTS_100_(b *testing.B)    { benchmarkTS(b, 100) }
-func BenchmarkTS_1000_(b *testing.B)   { benchmarkTS(b, 1000) }
-func BenchmarkTS_10000_(b *testing.B)  { benchmarkTS(b, 10000) }
-func BenchmarkTS_100000_(b *testing.B) { benchmarkTS(b, 100000) }
+func BenchmarkTS_10_(b *testing.B)    { benchmarkTS(b, 10) }
+func BenchmarkTS_100_(b *testing.B)   { benchmarkTS(b, 100) }
+func BenchmarkTS_1000_(b *testing.B)  { benchmarkTS(b, 1000) }
+func BenchmarkTS_10000_(b *testing.B) { benchmarkTS(b, 10000) }
 
+// func BenchmarkTS_100000_(b *testing.B) { benchmarkTS(b, 100000) }
 // func BenchmarkTS_1000000_(b *testing.B)  { benchmarkTS(b, 1000000) }
-func BenchmarkTS2_10_(b *testing.B)     { benchmarkTS2(b, 10) }
-func BenchmarkTS2_100_(b *testing.B)    { benchmarkTS2(b, 100) }
-func BenchmarkTS2_1000_(b *testing.B)   { benchmarkTS2(b, 1000) }
-func BenchmarkTS2_10000_(b *testing.B)  { benchmarkTS2(b, 10000) }
-func BenchmarkTS2_100000_(b *testing.B) { benchmarkTS2(b, 100000) }
 
+func BenchmarkTS2_10_(b *testing.B)    { benchmarkTS2(b, 10) }
+func BenchmarkTS2_100_(b *testing.B)   { benchmarkTS2(b, 100) }
+func BenchmarkTS2_1000_(b *testing.B)  { benchmarkTS2(b, 1000) }
+func BenchmarkTS2_10000_(b *testing.B) { benchmarkTS2(b, 10000) }
+
+// func BenchmarkTS2_100000_(b *testing.B) { benchmarkTS2(b, 100000) }
 // func BenchmarkTS2_1000000_(b *testing.B) { benchmarkTS2(b, 1000000) }
 
 func TestJustRunTS_10_(t *testing.T)     { testJustRunTS(t, 10) }

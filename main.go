@@ -19,23 +19,23 @@ type testdata struct {
 	T *mat.Dense
 }
 
-type HT struct {
-	testdata
-	k int
-}
-
-func (ht *HT) Dim() int {
-	rows, _ := ht.T.Dims()
-	return rows
-}
-func (ht *HT) nT() int {
-	_, cols := ht.T.Dims()
-	return cols
-}
-func (ht *HT) nB() int {
-	_, cols := ht.B.Dims()
-	return cols
-}
+// type HT struct {
+// 	testdata
+// 	k int
+// }
+//
+// func (ht *HT) Dim() int {
+// 	rows, _ := ht.T.Dims()
+// 	return rows
+// }
+// func (ht *HT) nT() int {
+// 	_, cols := ht.T.Dims()
+// 	return cols
+// }
+// func (ht *HT) nB() int {
+// 	_, cols := ht.B.Dims()
+// 	return cols
+// }
 
 func TS(k int, t *testdata) float64 {
 	// original code:
@@ -51,8 +51,8 @@ func TS(k int, t *testdata) float64 {
 	//     + np.log(self.NB/float(self.NT-1)
 
 	nn := NewNNfromTest(k, t)
-	D, nB := t.B.Dims()
-	_, nT := t.T.Dims()
+	nB, D := t.B.Dims()
+	nT, _ := t.T.Dims()
 	r_b := nn.dists_b(NewKDPointsFromMat(t.T)) // T for both, only _b flips
 	r_t := nn.dists_t(NewKDPointsFromMat(t.T))
 
@@ -68,8 +68,8 @@ func TS(k int, t *testdata) float64 {
 func TS2(k int, t *testdata) float64 {
 	// alternative implementation for benchmarking
 	nn := NewNNfromTest(k, t)
-	D, nB := t.B.Dims()
-	_, nT := t.T.Dims()
+	nB, D := t.B.Dims()
+	nT, _ := t.T.Dims()
 	r_b := nn.dists_b(NewKDPointsFromMat(t.T)) // T for both, only _b flips
 	r_t := nn.dists_t(NewKDPointsFromMat(t.T))
 
@@ -111,42 +111,42 @@ func TS_for_numpy(dataB *C.double, rows_b, cols_b C.int, dataT *C.double, rows_t
 }
 
 func shuffle(t *testdata) *testdata {
-	r, cb := t.B.Dims()
-	newB := mat.NewDense(r, cb, nil)
-	_, ct := t.T.Dims()
-	newT := mat.NewDense(r, ct, nil)
+	Nb, d := t.B.Dims()
+	newB := mat.NewDense(Nb, d, nil)
+	Nt, _ := t.T.Dims()
+	newT := mat.NewDense(Nt, d, nil)
 
-	shuffle_indices := make([]int, cb+ct)
-	for i := 0; i < cb+ct; i++ {
+	shuffle_indices := make([]int, Nb+Nt)
+	for i := 0; i < Nb+Nt; i++ {
 		shuffle_indices[i] = i
 	}
 
-	rand.Shuffle(cb+ct, func(i, j int) {
+	rand.Shuffle(Nb+Nt, func(i, j int) {
 		shuffle_indices[i], shuffle_indices[j] = shuffle_indices[j], shuffle_indices[i]
 	})
 
-	for j := 0; j < cb; j++ {
+	for j := 0; j < Nb; j++ {
 		source := shuffle_indices[j]
 		var tmp mat.Vector
-		if source < cb {
+		if source < Nb {
 			tmp = t.B.ColView(source)
 		} else {
-			tmp = t.T.ColView(source - cb)
+			tmp = t.T.ColView(source - Nb)
 		}
-		for i := 0; i < r; i++ {
-			newB.Set(i, j, tmp.AtVec(i))
+		for i := 0; i < d; i++ {
+			newB.Set(j, i, tmp.AtVec(i))
 		}
 	}
-	for j := cb; j < cb+ct; j++ {
+	for j := Nb; j < Nb+Nt; j++ {
 		source := shuffle_indices[j]
 		var tmp mat.Vector
-		if source < cb {
+		if source < Nb {
 			tmp = t.B.ColView(source)
 		} else {
-			tmp = t.T.ColView(source - cb)
+			tmp = t.T.ColView(source - Nb)
 		}
-		for i := 0; i < r; i++ {
-			newT.Set(i, j-cb, tmp.AtVec(i))
+		for i := 0; i < d; i++ {
+			newT.Set(j-Nb, i, tmp.AtVec(i))
 		}
 	}
 

@@ -34,10 +34,10 @@ func vectorToKDPoint(p mat.Vector) *kdPoint {
 	return retval
 }
 func NewKDPointsFromMat(m *mat.Dense) []kdtree.Point {
-	_, cols := m.Dims()
-	points := make([]kdtree.Point, cols)
-	for i := 0; i < cols; i++ {
-		tmp := vectorToKDPoint(m.ColView(i))
+	rows, _ := m.Dims()
+	points := make([]kdtree.Point, rows)
+	for i := 0; i < rows; i++ {
+		tmp := vectorToKDPoint(m.RowView(i))
 		points[i] = *tmp
 	}
 	return points

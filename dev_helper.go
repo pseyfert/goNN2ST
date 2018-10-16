@@ -36,11 +36,12 @@ func plotToy(toy *testdata) {
 }
 
 func toyToPlot(in mat.Matrix) plotter.XYs {
-	_, npoints := in.Dims()
+	npoints, _ := in.Dims()
 	pts := make(plotter.XYs, npoints)
 	for i := range pts {
-		pts[i].X = in.At(0, i)
-		pts[i].Y = in.At(1, i)
+		// TODO: there's got to be a nicer way
+		pts[i].X = in.At(i, 0)
+		pts[i].Y = in.At(i, 1)
 	}
 	return pts
 }

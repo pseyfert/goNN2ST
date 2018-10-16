@@ -13,7 +13,7 @@ func randomMatrix(n int, points int) *mat.Dense {
 		tmp[i] = rand.NormFloat64()
 	}
 
-	A := mat.NewDense(n, points, tmp)
+	A := mat.NewDense(points, n, tmp)
 	return A
 }
 
@@ -27,13 +27,11 @@ func newSample(mb mat.Vector, cb mat.Symmetric, npoints int) (*mat.Dense, error)
 	}
 
 	L_b := chol_b.LTo(nil)
-	rand_b.Product(L_b, rand_b)
+	rand_b.Product(rand_b, L_b)
 
-	// benchmark:
-	// slightly faster like this, than flipping i and j
-	for i := 0; i < mb.Len(); i++ {
-		for j := 0; j < npoints; j++ {
-			rand_b.Set(i, j, rand_b.At(i, j)+mb.AtVec(i))
+	for j := 0; j < npoints; j++ {
+		for i := 0; i < mb.Len(); i++ {
+			rand_b.Set(j, i, rand_b.At(j, i)+mb.AtVec(i))
 		}
 	}
 
